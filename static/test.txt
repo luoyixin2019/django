@@ -1,0 +1,1 @@
+/home/lyx/django/test_upload/static/images/split_P0938
