@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html>
+<head>
+    <meta charste="gb2312">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <style>
+        html,
+        body,
+        #container {
+            width: 100%;
+            height:97%;
+        }
+    </style>
+
+    <title>welcome</title>
+    
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <script src="https://webapi.amap.com/maps?v=1.4.13&key=762747bd741ab78995da2492120a27b6&plugin=AMap.RectangleEditor"></script>
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+    
+    <script type="text/javascript" src="{%static 'js/jquery.js'%}"></script>
+    <script type="text/javascript" src="{%static 'js/uikit.min.js'%}"></script>
+    <script type="text/javascript" src="{%static 'js/components/upload.js'%}"></script>
+    <script type="text/javascript" src="{%static 'js/layer/layer.js'%}"></script>
+
+    <link rel="stylesheet" href="{%static 'css/uikit.min.css'%}" />
+    <link rel="stylesheet" href="{%static 'css/components/upload.css'%}" />
+    <link rel="stylesheet" href="{%static 'css/components/placeholder.min.css'%}" />
+    <link rel="stylesheet" href="{%static 'css/components/form-file.min.css'%}" />
+    <link rel="stylesheet" href="{%static 'css/components/progress.css'%}" />
+    <link rel="stylesheet" href="{%static 'css/helang.css'%}" />
+    
+</head>
+
+<body>  
+
+
+<nav class="hl_nav">
+    <ul class="nav_list">
+        <li class="active">
+	
+            <a class="nav_head" onclick="open_pic()">加载影像</a>
+
+        </li>
+        <li>
+            <a class="nav_head" onclick="edit_roi()">编辑ROI</a>
+
+        </li>
+        <li>
+            <a class="nav_head" >目标检测</a>
+            <a class="nav_body" >开始检测</a>
+            <a class="nav_body" >统计</a>
+
+        </li>
+        <li>
+            <a class="nav_head" >保存影像</a>
+
+        </li>
+        <li>
+            <a class="nav_head" onclick="remove()">清除影像</a>
+
+        </li>
+        <li>
+            <a class="nav_head" >招贤纳士</a>
+            <a class="nav_body" >招贤纳士</a>
+        </li>
+        <li>
+            <a class="nav_head" >关于我们</a>
+        </li>
+    </ul>
+</nav>
+
+
+                   
+                            
+                            
+<div id="container" position="relative">
+
+</div>
+    <div id = "edit_roi" class="input-card" style="width: 120px;visibility:hidden">
+        <button class="btn" onclick="rectangleEditor.open()" style="margin-bottom: 5px">start edit</button>
+        <button class="btn" onclick="rectangleEditor.close()">end edit</button>
+        <button class="btn" onclick="object_detect(zuobiao)">object detect</button>
+    </div>
+    
+    <div class="input-card" id = "open_pic"  style="visibility:hidden"  >
+        <div position="absolute">
+    <div class="uk-form-row">
+        <div class="uk-form-label">
+            {{ form.file_path.label_tag }}
+            {% for error in form.file_path.errors %}
+            <span class="uk-badge uk-badge-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div id="upload-drop" >
+            {# <i class="uk-icon-cloud-upload uk-icon-medium "></i>  #}
+            <input id="upload-select" name="upload-select" type="file">
+            <input type="text" id="file_path" name="file_path"  value="" hidden/>
+          </div>
+        <div id="progressbar" class="uk-progress uk-hidden">
+            <div class="uk-progress-bar" style="width: 0%;">0%</div>
+        </div>
+    </div>
+</div> 
+    </div>
+    
+
+    <script>
+    var map = new AMap.Map('container', {
+        center: [114.35,30.53],
+        expandZoomRange:true,
+        zooms:[2,20],
+        showLabel: false,
+        layers: [
+            // rs
+            //new AMap.TileLayer.Satellite()
+            //new AMap.TileLayer(),//
+            // road net
+            //new AMap.TileLayer.RoadNet()
+        ],
+        zoom: 14
+    });
+
+    
+    var southWest = new AMap.LngLat(114.35, 30.53);
+    var northEast = new AMap.LngLat(114.35010001, 30.53010001);
+    //these 2 points will be used in below compute,
+    
+    //var northEast = new AMap.LngLat(114.360809326,30.537185669)
+
+    
+    //
+    
+    
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //gps
+    var lnglat = [114.35, 30.53];
+    var m1 = new AMap.Marker({
+        position: lnglat,
+        icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png"
+    });
+    map.add(m1);
+    m1.setLabel({
+        offset: new AMap.Pixel(20, 20),
+        content: "GPS"
+    });
+    var m2;
+    var imageLayer1;
+    var imageLayer2 = new Array();
+
+    function convertFrom(lnglat, type) {
+        AMap.convertFrom(lnglat, type, function (status, result) {
+            if (result.info === 'ok') {
+                var resLnglat = result.locations[0];
+                m2 = new AMap.Marker({
+                    position: resLnglat,
+                });
+                map.add(m2);
+                //
+                m2.setLabel({
+                    offset: new AMap.Pixel(20, 20),
+                    content: "gaode point"
+                });
+            }
+        });
+    }
+    convertFrom(lnglat, 'gps');
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    var x1 =0,y1=0,x2=1,y2=1;
+    var zuobiao ={x1:x1,x2:x2,y1:y1,y2:y2};
+
+    function update_zuobiao(){
+        //get the lat & lng of the bound
+        X = northEast.getLng() - southWest.getLng()
+        Y = northEast.getLat() - southWest.getLat()
+        x = rectangle.getBounds().getNorthEast().getLng() - rectangle.getBounds().getSouthWest().getLng()
+        y = rectangle.getBounds().getNorthEast().getLat() - rectangle.getBounds().getSouthWest().getLat()
+
+        //transform to relative coordirate
+        zuobiao["x1"] = (rectangle.getBounds().getSouthWest().getLng() - southWest.getLng()) / X
+        zuobiao["y1"] = 1 - (rectangle.getBounds().getNorthEast().getLat() - southWest.getLat())/Y
+        zuobiao["x2"] = (rectangle.getBounds().getNorthEast().getLng() - southWest.getLng())/X
+        zuobiao["y2"] = 1 - (rectangle.getBounds().getSouthWest().getLat() - southWest.getLat()) / Y
+    }
+
+    var index = 0;
+    function object_detect(value) {
+        //use py to cut the picture
+        
+        $.ajax({
+
+            url: "/object_detect/",//activate the view.py
+            type: "GET",
+            dataType:"text", //encode=gbk",  //"application/x-www-form-urlencoded"
+            data: value,
+            cache:false,
+            success: function (result) {
+                alert(result);
+                imageLayer2[index] = new AMap.ImageLayer({
+                url:'static/images/' + result + '_0.jpg' ,
+                bounds: new AMap.Bounds(
+                    [rectangle.getBounds().getSouthWest().getLng(),rectangle.getBounds().getSouthWest().getLat()],
+                    [rectangle.getBounds().getNorthEast().getLng(),rectangle.getBounds().getNorthEast().getLat()]
+                ),
+                    zooms: [15, 20]
+                });
+                map.add(imageLayer2[index++]);////////////////////////
+              },
+              
+            error: function (result){
+                alert("error");
+              }
+
+          });
+
+
+    }
+    
+    var rectangleEditor;
+    function open_pic(){
+        document.getElementById("open_pic").style.visibility="visible";
+    }
+    
+    var bounds;
+    var rectangle;
+    function edit_roi() {
+        northEast.lng = northEast.Q = a;
+        northEast.lat = northEast.P = b;
+
+        document.getElementById("edit_roi").style.visibility="visible";
+        
+        //visualize the bounds
+        bounds = new AMap.Bounds(southWest, northEast)
+   
+                rectangle = new AMap.Rectangle({
+                    bounds: bounds,
+                    strokeColor:'red',
+                    strokeWeight: 6,
+                    strokeOpacity:0.5,
+                    strokeDasharray: [30,10],
+                    // strokeStyle solid
+                    strokeStyle: 'dashed',
+                    fillColor:'',
+                    fillOpacity:0.5,
+                    cursor:'pointer',
+                    zIndex:50,
+                })
+                rectangle.setMap(map)       /////////////////////////////////////////////////////  
+                
+                map.setFitView([ rectangle ])
+                
+         
+      rectangleEditor = new AMap.RectangleEditor(map, rectangle)
+  
+      rectangleEditor.on('adjust', function(event) {
+          log.info('activate adjust')
+      })
+  
+      rectangleEditor.on('end', function(event) {
+          log.info('activate end')
+          update_zuobiao()
+          // event.target
+      })
+    
+    }
+
+    function remove() {
+        for (var i = 0; i < imageLayer2.length; i++)
+        {
+            map.remove(imageLayer2[i]);
+        }
+        
+        map.remove(imageLayer1);
+        map.remove(map.getAllOverlays());
+    }
+
+    </script>
+    <script type="text/javascript" src="{%static 'js/upload.js'%}"></script>
+
+
+</body>
+</html>
