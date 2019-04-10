@@ -89,23 +89,23 @@
     
     <div class="input-card" id = "open_pic"  style="visibility:hidden"  >
         <div position="absolute">
-    <div class="uk-form-row">
-        <div class="uk-form-label">
-            {{ form.file_path.label_tag }}
-            {% for error in form.file_path.errors %}
-            <span class="uk-badge uk-badge-danger">{{ error }}</span>
-            {% endfor %}
+            <div class="uk-form-row">
+                <div class="uk-form-label">
+                    {{ form.file_path.label_tag }}
+                    {% for error in form.file_path.errors %}
+                    <span class="uk-badge uk-badge-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div id="upload-drop" >
+                    {# <i class="uk-icon-cloud-upload uk-icon-medium "></i>  #}
+                    <input id="upload-select" name="upload-select" type="file">
+                    <input type="text" id="file_path" name="file_path"  value="" hidden/>
+                  </div>
+                <div id="progressbar" class="uk-progress uk-hidden">
+                    <div class="uk-progress-bar" style="width: 0%;">0%</div>
+                </div>
+            </div>
         </div>
-        <div id="upload-drop" >
-            {# <i class="uk-icon-cloud-upload uk-icon-medium "></i>  #}
-            <input id="upload-select" name="upload-select" type="file">
-            <input type="text" id="file_path" name="file_path"  value="" hidden/>
-          </div>
-        <div id="progressbar" class="uk-progress uk-hidden">
-            <div class="uk-progress-bar" style="width: 0%;">0%</div>
-        </div>
-    </div>
-</div> 
     </div>
     
 

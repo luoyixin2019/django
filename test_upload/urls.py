@@ -22,8 +22,9 @@ urlpatterns = [
     #url(r'^$', app1_views.index),
     #url(r'^$', app1_views.upload_file),
     url(r'^$', app1_views.index),                   
-    url(r'^uploadFile/$', app1_views.fileupload),
-    url(r'^object_detect/$', app1_views.object_detection),
+    url(r'^uploadFile/$', app1_views.fileupload),     
+    url(r'^upload/$', app1_views.upload_file),
+    # url(r'^object_detect/$', app1_views.object_detection),
 
     url(r'^admin/', admin.site.urls),
     
