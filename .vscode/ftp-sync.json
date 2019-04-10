@@ -1,0 +1,27 @@
+{
+    "remotePath": "/home/hj/project/django",
+    "host": "202.114.114.96",
+    "port": 22,
+    "username": "hj",
+    "password": "644152350",
+    "secure": false,
+    "protocol": "sftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath": null,
+    "passphrase": null,
+    "agent": null,
+    "allow": [],
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store"
+    ],
+    "generatedFiles": {
+        "extensionsToInclude": [
+            ""
+        ],
+        "path": ""
+    }
+}

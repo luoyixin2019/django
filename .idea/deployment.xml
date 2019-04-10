@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="ssh://hj@202.114.114.96:22/home/hj/python/py27env/bin/python" autoUploadExternalChanges="true">
+    <serverData>
+      <paths name="ssh://hj@202.114.114.96:22/home/hj/python/py27env/bin/python">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/hj/project/django" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
